@@ -1,0 +1,15 @@
+//Variables
+@import "variables";
+
+//Boostrap
+@import "node_modules/bootstrap/scss/bootstrap";
+
+//Font awesome
+@import "node_modules/font-awesome/scss/font-awesome";
+
+// Selectize
+@import "node_modules/selectize-scss/src/selectize";
+
+//Custom
+@import "custom";
+@import "fixed_table_header";
