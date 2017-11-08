@@ -2,7 +2,8 @@
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
             <router-link :to="{ name: 'page.budget' }" class="navbar-brand">
-                <img width="173" class="ml-3 ml-md-0" src="/img/logo.png" :alt="$t('main.title')" />
+                {{ $t('main.title') }}
+                <span v-if="storageName">({{ storageName }})</span>
             </router-link>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -23,6 +24,9 @@
         computed: {
             menu() {
                 return this.$store.getters.getMenu
+            },
+            storageName() {
+                return this.$store.getters.getStorageName
             }
         }
     }
