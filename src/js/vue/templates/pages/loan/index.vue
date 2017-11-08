@@ -188,6 +188,7 @@
                 event.stopImmediatePropagation()
                 if(this.loans[index]) {
                     this.editLoanIndex = index
+                    this.loan.id = this.loans[index].id
                     this.loan.label = this.loans[index].label
                     this.loan.amount = this.loans[index].amount
                     this.loan.payments = this.loans[index].payments.map(item => {

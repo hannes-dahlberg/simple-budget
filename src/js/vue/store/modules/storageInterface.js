@@ -7,7 +7,7 @@ export default {
                 state[storageName].push(Object.assign({}, payload));
             },
             ['update'+ unitName](state, payload) {
-                var foundIndex = state[storageName].findIndex(item => item.id == payload.id)
+                var foundIndex = state[storageName].findIndex(item => item.id == payload.data.id)
                 if(foundIndex != -1) {
                     state[storageName].splice(foundIndex, 1, Object.assign({}, payload.data))
                 }
