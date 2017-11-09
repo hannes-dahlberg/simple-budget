@@ -28,6 +28,7 @@
                 </form>
             </div>
             <div class="col-9">
+                <transactions-modal id="transactions_modal" :transactions="transactions" :model-id="modelId" module-name="income" :callback="callback"></transactions-modal>
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
@@ -43,13 +44,14 @@
                         <tr v-for="(income, index) in incomes">
                             <td>{{ income.label }}</td>
                             <td v-if="view == 'budget'" class="text-right">{{ $store.getters.getFormatedAmount(income.amount) }}</td>
-                            <edit-row v-else="view == 'result'" :index="index" :item-id="income.id" :amount="income.amount" :module-name="'income'"></edit-row>
+                            <edit-row v-else="view == 'result'" :index="index" :item-id="income.id" :amount="income.amount" :module-name="'income'" :callback="callback"></edit-row>
                             <td>{{ $t('income.recurrencies.' + (income.recurrency || 'none')) }}</td>
                             <td v-html="income.start || '-'" :class="income.start ? 'text-right' : 'text-center'"></td>
                             <td v-html="income.end || '-'" :class="income.end ? 'text-right' : 'text-center'"></td>
                             <td class="text-center">
                                 <a class="text-success" href="" v-on:click.prevent="editIncome(index)"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                                 <a class="text-danger" href="" v-on:click.prevent="deleteIncome(index)"><i class="fa fa-times" aria-hidden="true"></i></a>
+                                <a v-if="getTransactions(income.id).length" class="text-info" href="" v-on:click.prevent="showTransactions(index)"><i class="fa fa-list-ul" aria-hidden="true"></i></a>
                             </td>
                         </tr>
                     </tbody>
@@ -61,8 +63,9 @@
 <script>
     import selectize from '../components/selectize'
     import editRow from '../components/edit_row'
+    import transactionsModal from '../components/transactions'
     export default {
-        components: { selectize, editRow },
+        components: { selectize, editRow, transactionsModal },
         data() {
             return {
                 editIncomeIndex: null,
@@ -73,7 +76,9 @@
                     recurrency: null,
                     start: null,
                     end: null
-                }
+                },
+                transactions: null,
+                modelId: null
             }
         },
         computed: {
@@ -89,9 +94,6 @@
             view() {
                 return this.$store.getters.getView
             }
-        },
-        mounted() {
-
         },
         validators: {
 
@@ -117,10 +119,14 @@
                 }
             },
             deleteIncome(index) {
-                this.$store.commit('deleteIncome', { index });
-                if(this.editIncomeIndex == index) {
-                    this.resetIncome();
-                }
+                swal('Ta bort', 'Är du säker', 'warning', {buttons: ['Nej', 'Ja']}).then(value => {
+                    if(value) {
+                        this.$store.commit('deleteIncome', { index });
+                        if(this.editIncomeIndex == index) {
+                            this.resetIncome();
+                        }
+                    }
+                })
             },
             resetIncome() {
                 this.editIncomeIndex = null
@@ -130,6 +136,18 @@
                 this.income.recurrency = null
                 this.income.start = null
                 this.income.end = null
+            },
+            getTransactions(id) {
+                return this.$store.getters.getIncomeTransactions(id)
+            },
+            showTransactions(index) {
+                $('#transactions_modal').modal('show')
+                this.modelId = this.incomes[index].id
+                this.transactions = this.getTransactions(this.incomes[index].id)
+            },
+            callback() {
+                console.log('korv')
+                this.$forceUpdate()
             }
         }
     }

@@ -15,7 +15,7 @@
         export default {
             components: { navbar, footerComponent, viewToggle },
             mounted() {
-                console.log(this.$store)
+                console.log(this)
             }
         }
 </script>

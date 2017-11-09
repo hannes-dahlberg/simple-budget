@@ -22,6 +22,6 @@ app.use(bodyParser.json({ limit: '50mb' }))
 app.post('/api/backup', middleware.key, controller.api.backup)
 app.get('/api/restore', middleware.key, controller.api.restore)
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!')
+app.listen(3001, function () {
+  console.log('Example app listening on port 3001!')
 })

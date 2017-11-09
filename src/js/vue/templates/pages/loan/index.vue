@@ -201,11 +201,15 @@
                 }
             },
             deleteLoan(index) {
-                event.stopImmediatePropagation()
-                this.$store.commit('deleteLoan', { index, unitName: ['interestResult', 'amortResult'] });
-                if(this.editLoanIndex == index) {
-                    this.resetLoan();
-                }
+                swal('Ta bort', 'Är du säker', 'warning', {buttons: ['Nej', 'Ja']}).then(value => {
+                    if(value) {
+                        event.stopImmediatePropagation()
+                        this.$store.commit('deleteLoan', { index, unitName: ['interestResult', 'amortResult'] });
+                        if(this.editLoanIndex == index) {
+                            this.resetLoan();
+                        }
+                    }
+                })
             },
             addPayment() {
                 this.loan.payments.push({

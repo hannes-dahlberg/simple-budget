@@ -28,11 +28,13 @@
                 </form>
             </div>
             <div class="col-9">
+                <transactions-modal id="transactions_modal" :transactions="transactions" :model-id="modelId" module-name="saving" :callback="callback"></transactions-modal>
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
                             <th>Etikett</th>
                             <th>Belopp</th>
+                            <th>Saldo ({{ selectedPeriod }})</th>
                             <th>Upprepning</th>
                             <th>Börjar</th>
                             <th>Slutar</th>
@@ -43,13 +45,15 @@
                         <tr v-for="(saving, index) in savings">
                             <td>{{ saving.label }}</td>
                             <td v-if="view == 'budget'" class="text-right">{{ $store.getters.getFormatedAmount(saving.amount) }}</td>
-                            <edit-row v-else="view == 'result'" :index="index" :item-id="saving.id" :amount="saving.amount" :module-name="'saving'"></edit-row>
+                            <edit-row v-else="view == 'result'" :index="index" :item-id="saving.id" :amount="saving.amount" :module-name="'saving'" :callback="callback"></edit-row>
+                            <td>{{ $store.getters.getFormatedAmount($store.getters.getSavingSum(saving.id)) }}</td>
                             <td>{{ $t('saving.recurrencies.' + (saving.recurrency || 'none')) }}</td>
                             <td v-html="saving.start || '-'" :class="saving.start ? 'text-right' : 'text-center'"></td>
                             <td v-html="saving.end || '-'" :class="saving.end ? 'text-right' : 'text-center'"></td>
                             <td class="text-center">
                                 <a class="text-success" href="" v-on:click.prevent="editSaving(index)"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                                 <a class="text-danger" href="" v-on:click.prevent="deleteSaving(index)"><i class="fa fa-times" aria-hidden="true"></i></a>
+                                <a v-if="getTransactions(saving.id).length" class="text-info" href="" v-on:click.prevent="showTransactions(index)"><i class="fa fa-list-ul" aria-hidden="true"></i></a>
                             </td>
                         </tr>
                     </tbody>
@@ -61,8 +65,9 @@
 <script>
     import selectize from '../components/selectize'
     import editRow from '../components/edit_row'
+    import transactionsModal from '../components/transactions'
     export default {
-        components: { selectize, editRow },
+        components: { selectize, editRow, transactionsModal },
         data() {
             return {
                 editSavingIndex: null,
@@ -73,7 +78,9 @@
                     recurrency: null,
                     start: null,
                     end: null
-                }
+                },
+                transactions: null,
+                modelId: null
             }
         },
         computed: {
@@ -85,6 +92,9 @@
             },
             savingRecurenciesSelectize() {
                 return this.savingRecurencies.map(item => { return { value: item, text: this.$t('saving.recurrencies.' + item) } })
+            },
+            selectedPeriod() {
+                return this.$store.getters.getSelectedPeriod
             },
             view() {
                 return this.$store.getters.getView
@@ -117,10 +127,14 @@
                 }
             },
             deleteSaving(index) {
-                this.$store.commit('deleteSaving', { index });
-                if(this.editSavingIndex == index) {
-                    this.resetSaving();
-                }
+                swal('Ta bort', 'Är du säker', 'warning', {buttons: ['Nej', 'Ja']}).then(value => {
+                    if(value) {
+                        this.$store.commit('deleteSaving', { index });
+                        if(this.editSavingIndex == index) {
+                            this.resetSaving();
+                        }
+                    }
+                })
             },
             resetSaving() {
                 this.editSavingIndex = null
@@ -130,6 +144,17 @@
                 this.saving.recurrency = null
                 this.saving.start = null
                 this.saving.end = null
+            },
+            getTransactions(id) {
+                return this.$store.getters.getSavingTransactions(id)
+            },
+            showTransactions(index) {
+                $('#transactions_modal').modal('show')
+                this.modelId = this.savings[index].id
+                this.transactions = this.getTransactions(this.savings[index].id)
+            },
+            callback() {
+                this.$forceUpdate()
             }
         }
     }

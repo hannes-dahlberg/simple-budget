@@ -10,15 +10,12 @@ export default {
     actions: {
 
     },
-    getters: {
+    getters: Object.assign({
         getIncomes: state => {
             return state.incomes
         },
         getIncomeRecurrencies: state => {
             return state.recurrencies
-        },
-        getIncomeResult: (state, getters) => (id, period) => {
-            return _.get(state.result, (period || getters.getSelectedPeriod) + '.' + id, null)
         }
-    }
+    }, storageInterface.getters('income', 'incomes'))
 }

@@ -29,6 +29,7 @@
                 </form>
             </div>
             <div class="col-9">
+                <transactions-modal id="transactions_modal" :transactions="transactions" :model-id="modelId" module-name="expense" :callback="callback"></transactions-modal>
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
@@ -44,13 +45,14 @@
                         <tr v-for="(expense, index) in expenses">
                             <td>{{ expense.label }}</td>
                             <td v-if="view == 'budget'" class="text-right">{{ $store.getters.getFormatedAmount(expense.amount) }}</td>
-                            <edit-row v-else="view == 'result'" :index="index" :item-id="expense.id" :amount="expense.amount" :module-name="'expense'"></edit-row>
+                            <edit-row v-else="view == 'result'" :index="index" :item-id="expense.id" :amount="expense.amount" :module-name="'expense'" :callback="callback"></edit-row>
                             <td>{{ $t('expense.recurrencies.' + (expense.recurrency || 'none')) }}</td>
                             <td v-html="expense.start || '-'" :class="expense.start ? 'text-right' : 'text-center'"></td>
                             <td v-html="expense.end || '-'" :class="expense.end ? 'text-right' : 'text-center'"></td>
                             <td class="text-center">
                                 <a class="text-success" href="" v-on:click.prevent="editExpense(index)"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                                 <a class="text-danger" href="" v-on:click.prevent="deleteExpense(index)"><i class="fa fa-times" aria-hidden="true"></i></a>
+                                <a v-if="getTransactions(expense.id).length" class="text-info" href="" v-on:click.prevent="showTransactions(index)"><i class="fa fa-list-ul" aria-hidden="true"></i></a>
                             </td>
                         </tr>
                     </tbody>
@@ -62,8 +64,9 @@
 <script>
     import selectize from '../components/selectize'
     import editRow from '../components/edit_row'
+    import transactionsModal from '../components/transactions'
     export default {
-        components: { selectize, editRow },
+        components: { selectize, editRow, transactionsModal },
         data() {
             return {
                 editExpenseIndex: null,
@@ -74,7 +77,9 @@
                     recurrency: null,
                     start: null,
                     end: null
-                }
+                },
+                transactions: null,
+                modelId: null
             }
         },
         computed: {
@@ -115,10 +120,14 @@
                 }
             },
             deleteExpense(index) {
-                this.$store.commit('deleteExpense', { index });
-                if(this.editExpenseIndex == index) {
-                    this.resetExpense();
-                }
+                swal('Ta bort', 'Är du säker', 'warning', {buttons: ['Nej', 'Ja']}).then(value => {
+                    if(value) {
+                        this.$store.commit('deleteExpense', { index });
+                        if(this.editExpenseIndex == index) {
+                            this.resetExpense();
+                        }
+                    }
+                })
             },
             resetExpense() {
                 this.editExpenseIndex = null
@@ -128,6 +137,18 @@
                 this.expense.recurrency = null
                 this.expense.start = null
                 this.expense.end = null
+            },
+            getTransactions(id) {
+                return this.$store.getters.getExpenseTransactions(id)
+            },
+            showTransactions(index) {
+                $('#transactions_modal').modal('show')
+                this.modelId = this.expenses[index].id
+                this.transactions = this.getTransactions(this.expenses[index].id)
+            },
+            callback() {
+
+                this.$forceUpdate()
             }
         }
     }

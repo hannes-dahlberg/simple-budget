@@ -10,15 +10,12 @@ export default {
     actions: {
 
     },
-    getters: {
+    getters: Object.assign({
         getExpenses: state => {
             return state.expenses
         },
         getExpenseRecurrencies: state => {
             return state.recurrencies
-        },
-        getExpenseResult: (state, getters) => (id, period) => {
-            return _.get(state.result, (period || getters.getSelectedPeriod) + '.' + id, null)
         }
-    }
+    }, storageInterface.getters('expense', 'expenses'))
 }

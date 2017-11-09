@@ -7,12 +7,13 @@
             @keyup.enter="doneEdit"
             @keyup.esc="edit = false"
             :placeholder="$store.getters.getFormatedAmount(amount)">
-        <span v-if="getResult().amount" class="text-info" v-html="$store.getters.getFormatedAmount(getResult().amount)"></span>
-        <span v-else-if="!edit" class="text-muted" v-html="$store.getters.getFormatedAmount(amount)"></span>
+        <span v-if="getResult().amount" class="text-info float-right" v-html="$store.getters.getFormatedAmount(getResult().amount)"></span>
+        <span v-else-if="!edit" class="text-muted float-right" v-html="$store.getters.getFormatedAmount(amount)"></span>
         <div class="comment d-none" :class="{ 'd-inline-block': edit }">
             <div class="card">
-                <div class="card-header py-0">
+                <div class="card-header py-0 pr-1">
                     Kommentar
+                    <a class="float-right text-danger" href="#" v-on:click.prevent="edit = false"><i class="fa fa-times" aria-hidden="true"></i></a>
                 </div>
                 <div class="card-body p-1">
                     <div class="form-group m-0">

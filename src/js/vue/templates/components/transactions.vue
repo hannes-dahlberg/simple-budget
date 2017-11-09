@@ -12,20 +12,20 @@
                     <table class="table table-striped table-bordered table-sm">
                         <thead>
                             <tr>
-                                <th>Period</th>
-                                <th>Ränta</th>
-                                <th>Amortering</th>
-                                <th>Belopp</th>
-                                <th>Skuld</th>
+                                <th style="width: 20%">Period</th>
+                                <th style="width: 20%">Belopp</th>
+                                <th style="width: 50%">Kommentar</th>
+                                <th style="width: 10%;"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="(transaction, index) in pagination(loadedTransations)">
                                 <td>{{ transaction.period }}</td>
-                                <edit-row :index="index" :amount="transaction.interest" :item-id="loanData.id" :module-name="'loanInterest'" :period="transaction.period" :callback="callback"></edit-row>
-                                <edit-row :index="index" :amount="transaction.amort" :item-id="loanData.id" :module-name="'loanAmort'" :period="transaction.period" :callback="callback"></edit-row>
-                                <td>{{ $store.getters.getFormatedAmount(Math.round((transaction.interest + transaction.amort) * 100) / 100) }}</td>
-                                <td>{{ $store.getters.getFormatedAmount(transaction.amount) }}</td>
+                                <edit-row :index="index" :amount="transaction.amount" :item-id="modelId" :module-name="moduleName" :period="transaction.period" :callback="rowCallback"></edit-row>
+                                <td>{{ transaction.comment }}</td>
+                                <td class="text-center">
+                                    <a class="text-danger" href="" v-on:click.prevent="deleteTransaction(transaction.period)"><i class="fa fa-times" aria-hidden="true"></i></a>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -43,21 +43,18 @@
     </div>
 </template>
 <script>
-    import editRow from '../../../components/edit_row'
+    import editRow from './edit_row'
     export default {
-        props: ['id', 'transactions', 'loanData'],
+        props: ['id', 'transactions', 'modelId', 'moduleName', 'callback'],
         components: { editRow },
         data() {
             return {
                 loadedTransations: null,
                 page: 1,
-                transactionsPerPage: 12
+                transactionsPerPage: 20
             }
         },
         computed: {
-            loans() {
-                return this.$store.getters.getLoans
-            },
             pages() {
                 return Math.ceil(this.loadedTransations.length / this.transactionsPerPage)
             }
@@ -84,14 +81,37 @@
                 var end = start + this.transactionsPerPage
                 return this.loadedTransations.slice(start, end)
             },
-            callback() {
-                this.$store.commit('updateLoan', {
-                    index: this.loanData.index,
-                    data: this.loanData,
-                    fixedPayments: this.$store.getters.getOneLoanResult(this.loanData.id)
-                });
+            deleteTransaction(period) {
+                swal('Ta bort', 'Är du säker', 'warning', {buttons: ['Nej', 'Ja']}).then(value => {
+                    if(value) {
+                        var name = 'set' + this.moduleName.charAt(0).toUpperCase() + this.moduleName.slice(1) + 'Result';
+                        this.$store.commit(name, {
+                            period: period,
+                            id: this.modelId,
+                            amount: null,
+                            comment: null
+                        })
 
-                this.loadedTransations = this.loans[this.loanData.index].transactions
+                        this.rowCallback()
+                    }
+                })
+            },
+            rowCallback() {
+                var name = 'get' + this.moduleName.charAt(0).toUpperCase() + this.moduleName.slice(1) + 'Transactions';
+                this.loadedTransations = this.$store.getters[name](this.modelId)
+
+                //Hide modal if transactionlist is empty
+                if(!this.loadedTransations.length) {
+                    $('#' + this.id).modal('hide')
+                    if(this.callback) {
+                        this.callback()
+                    }
+                }
+
+                //Forcing any value dependent on period to re-render
+                var oldSelectedPeriod = this.$store.getters.getSelectedPeriod
+                this.$store.commit('setSeletctedPeriod', null)
+                this.$store.commit('setSeletctedPeriod', oldSelectedPeriod)
             }
         }
     }
