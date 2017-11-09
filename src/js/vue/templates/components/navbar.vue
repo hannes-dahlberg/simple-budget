@@ -1,7 +1,7 @@
 <template>
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <router-link :to="{ name: 'page.budget' }" class="navbar-brand">
+            <router-link :to="{ name: 'page.result' }" class="navbar-brand">
                 {{ $t('main.title') }}
                 <span v-if="storageName">({{ storageName }})</span>
             </router-link>

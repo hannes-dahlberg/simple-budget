@@ -33,7 +33,7 @@
                                 </tr>
                             </thead>
                             <tbody style="height: 500px;">
-                                <tr v-for="post in budget">
+                                <tr v-for="post in results">
                                     <td style="width: 16%;" class="text-right">{{ post.period }}</td>
                                     <td style="width: 14%;" class="text-right">{{ $store.getters.getFormatedAmount(post.income) }}</td>
                                     <td style="width: 14%;" class="text-right">{{ $store.getters.getFormatedAmount(post.expense) }}</td>
@@ -78,23 +78,23 @@
                     { value: 120, text: 'Tio år' }
                 ]
             },
-            budget() {
-                var budget = []
+            results() {
+                var results = []
                 var period = this.filterFrom
                 var balance = 0
                 while(period <= this.filterTo) {
                     var loan = [{ interest: 0, amort: 0 }]
-                    var budgetItem = {
+                    var resultItem = {
                         period: period,
-                        income: this.filteredBudget(period, 'getIncomes', 'getIncomeResult'),
-                        expense: this.filteredBudget(period, 'getExpenses', 'getExpenseResult'),
+                        income: this.filteredResults(period, 'getIncomes', 'getIncomeResult'),
+                        expense: this.filteredResults(period, 'getExpenses', 'getExpenseResult'),
                         loan: Math.round((loan.concat.apply(loan, this.$store.getters.getLoans.map(item => item.transactions.filter(item => item.period == period))).map(item => item.interest + item.amort).reduce((sum, amount) => parseFloat(sum) + parseFloat(amount)) * 100)) / 100,
-                        saving: this.filteredBudget(period, 'getSavings', 'getSavingResult')
+                        saving: this.filteredResults(period, 'getSavings', 'getSavingResult')
                     }
 
-                    budgetItem.remaining = Math.round((budgetItem.income - budgetItem.expense - budgetItem.loan - budgetItem.saving) * 100) / 100
-                    budgetItem.balance = balance = Math.round((balance + budgetItem.remaining) * 100) / 100
-                    budget.push(budgetItem)
+                    resultItem.remaining = Math.round((resultItem.income - resultItem.expense - resultItem.loan - resultItem.saving) * 100) / 100
+                    resultItem.balance = balance = Math.round((balance + resultItem.remaining) * 100) / 100
+                    results.push(resultItem)
 
                     var year = Math.floor(period / 100)
                     var month = Math.round(((period / 100) - year) * 100)
@@ -107,14 +107,14 @@
                     period = year + (month < 10 ? '0' : '') + month
                 }
 
-                return budget
+                return results
             }
         },
         methods: {
             setFilterTo() {
                 this.$store.commit('setFilterLength', this.selectedLength)
             },
-            filteredBudget(period, getterName, getterResultName) {
+            filteredResults(period, getterName, getterResultName) {
                 return [].concat.apply([0], this.$store.getters[getterName].filter(item => {
                     if((period >= item.start || !item.start) && (period <= item.end || !item.end)) {
                         var month = parseInt(period.toString().substr(4,2))

@@ -3,7 +3,7 @@ export default {
         "title": "Simpel budget"
     },
     "menu": {
-        "budget": "@:budget.budget",
+        "result": "@:result.result",
         "income": "@:income.income",
         "loan": "@:loan.loan",
         "saving": "@:saving.saving",
@@ -12,11 +12,11 @@ export default {
     },
     "view": {
         "period": "Period",
-        "budget": "@:budget.budget",
-        "result": "Resultat"
+        "budget": "Budget",
+        "result": "@:result.result"
     },
-    "budget": {
-        "budget": "Budget"
+    "result": {
+        "result": "Resultat"
     },
     "income": {
         "income": "Inkomster",
@@ -46,7 +46,7 @@ export default {
         }
     },
     "loan": {
-        "loan": "lån",
+        "loan": "Lån",
         "payment_recurrencies": {
             "none": "Ingen",
             "monthly": "Månadsvis",

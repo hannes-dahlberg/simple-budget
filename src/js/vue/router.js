@@ -9,7 +9,7 @@ import store from './store/index'
 import index from './templates/index.vue'
 import error404 from './templates/errors/404.vue'
 
-import pageBudget from './templates/pages/budget.vue'
+import pageResult from './templates/pages/result.vue'
 import pageIncome from './templates/pages/income.vue'
 import pageLoan from './templates/pages/loan/index.vue'
 import pageSaving from './templates/pages/saving.vue'
@@ -21,7 +21,7 @@ const router = new VueRouter({
     linkActiveClass: 'active',
     routes: [
         { path: '/', component: index, name: 'index', children: [
-            { path: 'budget', component: pageBudget, name: 'page.budget' },
+            { path: 'result', component: pageResult, name: 'page.result' },
             { path: 'income', component: pageIncome, name: 'page.income' },
             { path: 'loan', component: pageLoan, name: 'page.loan' },
             { path: 'saving', component: pageSaving, name: 'page.saving' },

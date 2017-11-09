@@ -7,7 +7,7 @@ import mutations from './mutations'
 import actions from './actions'
 import getters from './getters'
 
-import budget from './modules/budget'
+import result from './modules/result'
 import income from './modules/income'
 import loan from './modules/loan'
 import saving from './modules/saving'
@@ -18,7 +18,7 @@ export default new Vuex.Store({
     mutations,
     actions,
     getters,
-    modules: { budget, income, loan, saving, expense },
+    modules: { result, income, loan, saving, expense },
     plugins: [createPersistedState({
         key: 'simple-budget'
     })]

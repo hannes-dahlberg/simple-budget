@@ -2,7 +2,7 @@ export default {
     key: null,
     storageName: null,
     menu: [
-        { name: 'menu.budget', route: { name: 'page.budget' } },
+        { name: 'menu.result', route: { name: 'page.result' } },
         { divider: true },
         { name: 'menu.income', route: { name: 'page.income' } },
         { name: 'menu.loan', route: { name: 'page.loan' } },
