@@ -4,7 +4,7 @@
             <div class="col-12">
                 <form v-on:submit.prevent="" class="form-inline justify-content-end">
                     <label v-html="$t('view.period')"></label>
-                    <input type="text" class="form-control mx-3" :value="selectedPeriod" v-model="form.selectedPeriod" :disabled="view == 'budget'">
+                    <input type="text" class="form-control mx-3" :value="selectedPeriod" v-model="form.selectedPeriod" v-on:keyup="selectedPeriodKeyUp" :disabled="view == 'budget'">
                     <div class="form-check form-check-inline">
                         <label class="form-check-label">
                             <input class="form-check-input" type="radio" name="showBudget" value="budget" v-model="form.view">
@@ -46,11 +46,23 @@
             },
             'form.view'() {
                 this.$store.commit('toggleView', this.form.view)
+            },
+            'selectedPeriod'() {
+                this.form.selectedPeriod = this.selectedPeriod
             }
         },
         mounted() {
             this.form.selectedPeriod = this.selectedPeriod
             this.form.view = this.view
+        },
+        methods: {
+            selectedPeriodKeyUp(event) {
+                if(event.key == 'ArrowUp') {
+                    this.$store.commit('setSelectedPeriodNext')
+                } else if(event.key == 'ArrowDown') {
+                    this.$store.commit('setSelectedPeriodPrev')
+                }
+            }
         }
     }
 </script>

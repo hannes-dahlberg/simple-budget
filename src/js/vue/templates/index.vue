@@ -2,7 +2,7 @@
     <div>
         <a name="top"></a>
         <navbar></navbar>
-        <view-toggle></view-toggle>
+        <view-toggle v-if="['page.income', 'page.saving', 'page.expense'].indexOf(routeName) != -1"></view-toggle>
         <router-view></router-view>
         <footer-component></footer-component>
     </div>
@@ -14,6 +14,11 @@
 
         export default {
             components: { navbar, footerComponent, viewToggle },
+            computed: {
+                routeName() {
+                    return this.$route.name
+                }
+            },
             mounted() {
                 console.log(this)
             }
