@@ -25,10 +25,10 @@ var calculateLoanPayments = (amount, interest, amort, fixedAmount, startPeriod, 
 
         if(fixedPayments && fixedPayments[period]) {
             if(fixedPayments[period].interest) {
-                transaction.interest = parseFloat(fixedPayments[period].interest)
+                transaction.interest = parseFloat(fixedPayments[period].interest.amount)
             }
             if(fixedPayments[period].amort) {
-                transaction.amort = parseFloat(fixedPayments[period].amort)
+                transaction.amort = parseFloat(fixedPayments[period].amort.amount)
             }
         }
         transaction.amount = round(amount = amount - transaction.amort, 2)
@@ -106,7 +106,7 @@ export default {
 
             payload.data.payments = payload.data.payments.map(payment => {
                 var amount = payload.data.amount
-                
+
                 payment.transactions = calculateLoanPayments(
                     amount,
                     ['fixed_with_amort', 'variable'].indexOf(payment.type) != 0 ? { type: payment.interestType, value: payment.interest} : null,
