@@ -20,6 +20,7 @@ export default new Vuex.Store({
     getters,
     modules: { result, income, loan, saving, expense },
     plugins: [createPersistedState({
-        key: 'simple-budget'
+        key: 'simple-budget',
+        paths: ['currentLanguage', 'expense', 'income', 'loan', 'result', 'saving', 'selectedPeriod', 'storageName', 'key']
     })]
 })
